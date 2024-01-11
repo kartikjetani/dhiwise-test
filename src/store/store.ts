@@ -1,11 +1,16 @@
-// store.js
 import { configureStore } from '@reduxjs/toolkit';
-import workflowSlice from './reducers/workflowReducer';
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import workflowSlice from './slices/workflowSlice';
 
 const store = configureStore({
     reducer: {
         workflow: workflowSlice,
     },
 });
+
+export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch
+export const useAppDispatch: () => AppDispatch = useDispatch
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
 
 export default store;

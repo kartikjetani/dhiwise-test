@@ -1,4 +1,5 @@
 import { findAndUpdateNodeData, findNodeById } from "./globalUtils"
+import { Obj, WorkFlowStateType } from "./types"
 
 export function getConditionsFromDataType(dataType: string) {
     switch (dataType) {
@@ -11,7 +12,7 @@ export function getConditionsFromDataType(dataType: string) {
     }
 }
 
-export function getColumnDataType(tableData, columnName: string) {
+export function getColumnDataType(tableData: Obj[], columnName: string) {
     for (let i = 0; i < tableData.length; i++) {
         const row = tableData[i]
         const columnDataType = typeof row[columnName]
@@ -22,7 +23,7 @@ export function getColumnDataType(tableData, columnName: string) {
     return "undefined"
 }
 
-export function processDataLogic(state, action) {
+export function processDataLogic(state: WorkFlowStateType, action: { payload: string, type: string }) {
     const nodeId = action.payload
     const nodeData = findNodeById(nodeId, state.nodes)?.data;
     const sourceNodeData = findNodeById(nodeData?.sourceNode, state.nodes)?.data;
@@ -35,7 +36,7 @@ export function processDataLogic(state, action) {
         case "number is less than":
         case "number is less than or equal to":
             const number = Number.parseFloat(nodeData?.inputValue);
-            const filteredData = sourceNodeData?.tableData?.filter((row) => {
+            const filteredData = sourceNodeData?.tableData?.filter((row: Obj) => {
                 switch (nodeData.selectedCondition) {
                     case "number is equal to":
                         return row[nodeData?.selectedColumn] === number;
@@ -67,7 +68,7 @@ export function processDataLogic(state, action) {
         case "text matches regex":
         case "text does not match regex":
             const text = nodeData?.inputValue;
-            const filteredTextData = sourceNodeData?.tableData?.filter((row) => {
+            const filteredTextData = sourceNodeData?.tableData?.filter((row: Obj) => {
                 switch (nodeData.selectedCondition) {
                     case "text is exactly":
                         return row[nodeData?.selectedColumn] === text;

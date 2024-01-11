@@ -1,30 +1,14 @@
-// workflowReducer.js
 import { createSlice } from '@reduxjs/toolkit';
-import { useSelector } from 'react-redux';
-import { Edge, Node, addEdge } from 'reactflow';
+import { addEdge } from 'reactflow';
 import { processDataLogic } from '../../utils/filterUtils';
-import { findAndUpdateNodeData, findNodeById } from '../../utils/globalUtils';
-
-type WorkFlowStateType = {
-    nodes: Array<Node>,
-    edges: Array<Edge>,
-    tableData: {},
-    tableColumns: Array<any>,
-    columnDataTypes: any,
-    selectedColumn: string | null,
-    selectedCondition: string | null,
-    outputData: Array<any>,
-}
+import { findAndUpdateNodeData } from '../../utils/globalUtils';
+import { WorkFlowStateType } from '../../utils/types';
 
 const initialState: WorkFlowStateType = {
     nodes: [],
     edges: [],
-    tableData: {},
-    tableColumns: [],
-    columnDataTypes: {},
-    selectedColumn: null,
-    selectedCondition: null,
     outputData: [],
+    tableData: {}
 };
 
 const workflowSlice = createSlice({
@@ -51,20 +35,8 @@ const workflowSlice = createSlice({
         updateNodeData: (state, action) => {
             state.nodes = findAndUpdateNodeData(action.payload.id, action.payload.newData, state.nodes);
         },
-        setTableColumns: (state, action) => {
-            state.tableColumns = action.payload;
-        },
         setTableData: (state, action) => {
             state.tableData = action.payload;
-        },
-        setColumnDataTypes: (state, action) => {
-            state.columnDataTypes = { ...state.columnDataTypes, ...action.payload };
-        },
-        setSelectedColumn: (state, action) => {
-            state.selectedColumn = action.payload;
-        },
-        setSelectedCondition: (state, action) => {
-            state.selectedCondition = action.payload;
         },
         processData: processDataLogic,
         setOutputData: (state, action) => {
@@ -80,17 +52,9 @@ export const {
     addReduxEdge,
     updateNodeData,
     setTableData,
-    setTableColumns,
-    setColumnDataTypes,
-    setSelectedColumn,
-    setSelectedCondition,
     processData,
     setOutputData
 } = workflowSlice.actions;
 
-export default workflowSlice.reducer;
 
-export const getNodeById = (id: string) => {
-    const nodes = useSelector((state: any) => state.workflow.nodes);
-    return findNodeById(id, nodes);
-}
+export default workflowSlice.reducer;

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { Handle, NodeProps, Position, getIncomers, useEdges, useNodes } from 'reactflow';
-import { getNodeById, processData, updateNodeData } from '../store/reducers/workflowReducer';
+import { processData, updateNodeData } from '../store/slices/workflowSlice';
+import { useAppDispatch } from '../store/store';
 import { getColumnDataType, getConditionsFromDataType } from '../utils/filterUtils';
+import { findNodeById } from '../utils/globalUtils';
 
 function FilterNode(props: NodeProps) {
 
@@ -15,7 +16,8 @@ function FilterNode(props: NodeProps) {
         edges,
     );
 
-    const sourceData = getNodeById(incomers?.at(0)?.id ?? "")?.data
+    const sourceData = findNodeById(incomers?.at(0)?.id ?? "", nodes)?.data;
+
 
     const tableColumns = sourceData?.columns
     const tableData = sourceData?.tableData
@@ -24,7 +26,7 @@ function FilterNode(props: NodeProps) {
     const selectedCondition = data?.selectedCondition
     const [input, setInput] = useState(data?.inputValue)
 
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
 
     const conditions = columnDataType ? getConditionsFromDataType(columnDataType[selectedColumn ?? ""]) : []
 
@@ -63,8 +65,8 @@ function FilterNode(props: NodeProps) {
             onChange={(e) => onColumnChangeHandler(e.target.value)}
             id="column-name"
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-            <option selected value={undefined}>Choose a column</option>
-            {tableColumns?.map((column) => (
+            <option value={undefined}>Choose a column</option>
+            {tableColumns?.map((column: string) => (
                 <option key={column} value={column}>{column}</option>
             ))}
         </select>
@@ -75,7 +77,7 @@ function FilterNode(props: NodeProps) {
                 value={selectedCondition}
                 onChange={(e) => onConditionChangeHandler(e.target.value)}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                <option selected value={undefined}>Select condition</option>
+                <option value={undefined}>Select condition</option>
                 {conditions?.map((condition) => (
                     <option key={condition} value={condition}>{condition}</option>
                 ))}

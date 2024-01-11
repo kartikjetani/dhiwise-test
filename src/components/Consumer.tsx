@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useEdgesState, useNodesState, useOnSelectionChange } from 'reactflow';
-import { setOutputData } from '../store/reducers/workflowReducer';
+import { setOutputData } from '../store/slices/workflowSlice';
+import { useAppDispatch, useAppSelector } from '../store/store';
 
 function Consumer() {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
-    const reduxNodes = useSelector((state) => state?.workflow?.nodes);
-    const reduxEdges = useSelector((state) => state?.workflow?.edges);
+    const reduxNodes = useAppSelector((state) => state?.workflow?.nodes);
+    const reduxEdges = useAppSelector((state) => state?.workflow?.edges);
     const [, setNodes,] = useNodesState([]);
     const [, setEdges,] = useEdgesState([]);
 
@@ -22,7 +22,7 @@ function Consumer() {
     }, [reduxEdges])
 
     useOnSelectionChange({
-        onChange: ({ nodes, edges }) => {
+        onChange: ({ nodes }) => {
             if (nodes?.at(0)?.data?.tableData) {
                 dispatch(setOutputData(nodes?.at(0)?.data?.tableData))
             }

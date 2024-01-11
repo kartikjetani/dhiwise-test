@@ -1,9 +1,10 @@
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../store/store';
+import { Obj } from '../utils/types';
 
-const CsvToTable = () => {
+const TableRenderer = () => {
 
 
-    const outputData = useSelector((state) => state?.workflow?.outputData);
+    const outputData = useAppSelector((state) => state?.workflow?.outputData);
     const tableColumns = Object.keys(outputData?.at(0) ?? {})
 
     return (
@@ -18,7 +19,7 @@ const CsvToTable = () => {
                         </tr>
                     </thead>
                     <tbody className='overflow-y-scroll h-96' >
-                        {outputData?.map((row, index) => (
+                        {outputData?.map((row: Obj, index: number) => (
                             <tr key={index} className='odd:bg-white even:bg-gray-50 '>
                                 {tableColumns?.map((column) => (
                                     <td key={column} className='px-6 py-4 border  border-gray-300'>{row[column]}</td>
@@ -32,4 +33,4 @@ const CsvToTable = () => {
     );
 };
 
-export default CsvToTable;
+export default TableRenderer;

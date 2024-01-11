@@ -1,15 +1,16 @@
 import Papa from 'papaparse';
-import { useDispatch, useSelector } from 'react-redux';
 import { Handle, NodeProps, Position } from 'reactflow';
 import { csvConfig } from '../configs/csvConfig';
-import { setOutputData, setTableData, updateNodeData } from '../store/reducers/workflowReducer';
+import { setOutputData, setTableData, updateNodeData } from '../store/slices/workflowSlice';
+import { useAppDispatch, useAppSelector } from '../store/store';
+import { Obj } from '../utils/types';
 
 
-function CSVSelectorNode(props: NodeProps) {
+function DataSourceNode(props: NodeProps) {
 
     const { id, data, selected } = props
-    const dispatch = useDispatch();
-    const tableData = useSelector((state) => state?.workflow?.tableData);
+    const dispatch = useAppDispatch();
+    const tableData = useAppSelector((state) => state?.workflow?.tableData) as Obj;
 
 
     function onDataSourceChangeHandle(dataSourceId: string) {
@@ -49,12 +50,13 @@ function CSVSelectorNode(props: NodeProps) {
             <p>{data.label}</p>
             <label htmlFor={id} className="block mb-2 text-sm font-medium text-gray-900 ">Example data</label>
             <select id={id}
+                value={data?.dataSourceId}
                 onChange={(e) => onDataSourceChangeHandle(e.target.value)}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                <option selected={!data?.dataSourceId}>Choose a data source</option>
+                <option >Choose a data source</option>
                 {
                     csvConfig?.map((config) => (
-                        <option key={config.id} selected={config.id === data.dataSourceId} value={config.id}>{config.name}</option>
+                        <option key={config.id} value={config.id}>{config.name}</option>
                     ))
                 }
             </select>
@@ -67,4 +69,4 @@ function CSVSelectorNode(props: NodeProps) {
     )
 }
 
-export default CSVSelectorNode
+export default DataSourceNode

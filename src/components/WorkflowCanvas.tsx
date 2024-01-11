@@ -1,61 +1,40 @@
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import ReactFlow, { Background, Controls, addEdge, applyEdgeChanges, applyNodeChanges } from 'reactflow';
-import { setEdges, setNodes } from '../store/reducers/workflowReducer';
-import CSVSelectorNode from './CSVSelectorNode';
+import ReactFlow, { Background, Connection, Controls, Edge, EdgeChange, NodeChange, addEdge, applyEdgeChanges, applyNodeChanges } from 'reactflow';
+import { setEdges, setNodes } from '../store/slices/workflowSlice';
+import { useAppDispatch, useAppSelector } from '../store/store';
 import Consumer from './Consumer';
+import DataSourceNode from './DataSourceNode';
 import FilterNode from './FilterNode';
 
 export const nodeTypes = {
-    CSVSelectorNode,
+    DataSourceNode,
     FilterNode
 };
 
 const WorkflowCanvas = () => {
 
-    const nodes = useSelector((state) => state?.workflow?.nodes);
-    const edges = useSelector((state) => state?.workflow?.edges);
+    const nodes = useAppSelector((state) => state?.workflow?.nodes);
+    const edges = useAppSelector((state) => state?.workflow?.edges);
 
-    const dispatch = useDispatch();
-
-    // const onNodesChange = useCallback(
-    //     (changes) => dispatch(setNodes(changes)),
-    //     [setNodes]
-    // );
-    // const onEdgesChange = useCallback(
-    //     (changes) => dispatch(setEdges(changes)),
-    //     [setEdges]
-    // );
-    // const onConnect = useCallback(
-    //     (connection) => {
-    //         // Check if the target node already has an edge connected to it
-    //         const targetHasEdge = edges.some(edge => edge.target === connection.target);
-
-    //         // If the target node doesn't have an edge, create the new edge
-    //         if (!targetHasEdge) {
-    //             dispatch(addReduxEdge(connection));
-    //         }
-    //     },
-    //     [edges]
-    // );
+    const dispatch = useAppDispatch();
 
     const onNodesChange = useCallback(
-        (changes) => {
+        (changes: NodeChange[]) => {
             dispatch(setNodes(applyNodeChanges(changes, nodes)))
         },
         [nodes],
     );
     const onEdgesChange = useCallback(
-        (changes) => {
+        (changes: EdgeChange[]) => {
             dispatch(setEdges(applyEdgeChanges(changes, edges)))
         },
         [edges],
     );
 
     const onConnect = useCallback(
-        (connection) => {
+        (connection: Connection) => {
             // Check if the target node already has an edge connected to it
-            const targetHasEdge = edges.some(edge => edge.target === connection.target);
+            const targetHasEdge = edges.some((edge: Edge) => edge.target === connection.target);
 
             // If the target node doesn't have an edge, create the new edge
             if (!targetHasEdge) {
@@ -82,9 +61,6 @@ const WorkflowCanvas = () => {
                 <Controls />
                 <Consumer />
             </ReactFlow>
-            {/* <button onClick={handleAdd}>Add Node</button>
-            <button onClick={handleUpdate}>Update Node</button>
-            <button onClick={handleDelete}>Delete Node</button> */}
         </div>
     );
 };
