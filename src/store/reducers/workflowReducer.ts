@@ -1,7 +1,7 @@
 // workflowReducer.js
 import { createSlice } from '@reduxjs/toolkit';
 import { useSelector } from 'react-redux';
-import { Edge, Node, addEdge, applyEdgeChanges, applyNodeChanges } from 'reactflow';
+import { Edge, Node, addEdge } from 'reactflow';
 import { processDataLogic } from '../../utils/filterUtils';
 import { findAndUpdateNodeData, findNodeById } from '../../utils/globalUtils';
 
@@ -40,10 +40,10 @@ const workflowSlice = createSlice({
             state.nodes = [...state.nodes, action.payload];
         },
         setNodes: (state, action) => {
-            state.nodes = applyNodeChanges(action.payload, state.nodes);
+            state.nodes = action.payload;
         },
         setEdges: (state, action) => {
-            state.edges = applyEdgeChanges(action.payload, state.edges);
+            state.edges = action.payload;
         },
         addReduxEdge: (state, action) => {
             state.edges = addEdge(action.payload, state.edges);

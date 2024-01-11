@@ -16,7 +16,7 @@ function CSVSelectorNode(props: NodeProps) {
 
         if (tableData[dataSourceId]) {
             const { columns, data } = tableData[dataSourceId]
-            dispatch(updateNodeData({ id, newData: { columns, tableData: data } }))
+            dispatch(updateNodeData({ id, newData: { columns, tableData: data, dataSourceId } }))
             dispatch(setOutputData(data))
             return;
         }
@@ -34,7 +34,7 @@ function CSVSelectorNode(props: NodeProps) {
             dynamicTyping: true,
             complete: (result) => {
                 dispatch(setOutputData(result.data))
-                dispatch(updateNodeData({ id, newData: { columns: result.meta.fields, tableData: result.data } }))
+                dispatch(updateNodeData({ id, newData: { columns: result.meta.fields, tableData: result.data, dataSourceId } }))
                 dispatch(setTableData({ [dataSourceId]: { columns: result.meta.fields, data: result.data } }))
             },
             error: (error) => {
@@ -51,10 +51,10 @@ function CSVSelectorNode(props: NodeProps) {
             <select id={id}
                 onChange={(e) => onDataSourceChangeHandle(e.target.value)}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                <option selected>Choose a data source</option>
+                <option selected={!data?.dataSourceId}>Choose a data source</option>
                 {
                     csvConfig?.map((config) => (
-                        <option key={config.id} value={config.id}>{config.name}</option>
+                        <option key={config.id} selected={config.id === data.dataSourceId} value={config.id}>{config.name}</option>
                     ))
                 }
             </select>

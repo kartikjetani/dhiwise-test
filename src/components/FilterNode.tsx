@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Handle, NodeProps, Position, getIncomers, useEdges, useNodes } from 'reactflow';
-import { getNodeById, processData, setColumnDataTypes, updateNodeData } from '../store/reducers/workflowReducer';
+import { getNodeById, processData, updateNodeData } from '../store/reducers/workflowReducer';
 import { getColumnDataType, getConditionsFromDataType } from '../utils/filterUtils';
 
 function FilterNode(props: NodeProps) {
@@ -20,13 +20,13 @@ function FilterNode(props: NodeProps) {
     const tableColumns = sourceData?.columns
     const tableData = sourceData?.tableData
     const selectedColumn = data?.selectedColumn
-    const columnDataType = useSelector((state) => state?.workflow?.columnDataTypes)
+    const columnDataType = data?.columnDataType
     const selectedCondition = data?.selectedCondition
-    const [input, setInput] = useState()
+    const [input, setInput] = useState(data?.inputValue)
 
     const dispatch = useDispatch()
 
-    const conditions = getConditionsFromDataType(columnDataType[selectedColumn ?? ""])
+    const conditions = columnDataType ? getConditionsFromDataType(columnDataType[selectedColumn ?? ""]) : []
 
     useEffect(() => {
 
@@ -40,9 +40,9 @@ function FilterNode(props: NodeProps) {
         dispatch(updateNodeData({ id, newData: { selectedColumn: columnValue } }))
 
         // If column data type is not set, set it
-        if (!columnDataType[columnValue]) {
+        if (!columnDataType || !columnDataType[columnValue]) {
             const columnType = getColumnDataType(tableData, columnValue)
-            dispatch(setColumnDataTypes({ [columnValue]: columnType }))
+            dispatch(updateNodeData({ id, newData: { columnDataType: { ...columnDataType, [columnValue]: columnType } } }))
         }
     }
 
@@ -59,6 +59,7 @@ function FilterNode(props: NodeProps) {
         <p>Filter</p>
         <label htmlFor="column-name" className="block mb-2 text-sm font-medium text-gray-900 ">Column name:</label>
         <select
+            value={selectedColumn}
             onChange={(e) => onColumnChangeHandler(e.target.value)}
             id="column-name"
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
@@ -71,8 +72,8 @@ function FilterNode(props: NodeProps) {
         {selectedColumn && <>
             <label htmlFor="column-name" className="block mb-2 text-sm font-medium text-gray-900 ">Condition:</label>
             <select
+                value={selectedCondition}
                 onChange={(e) => onConditionChangeHandler(e.target.value)}
-                id="column-name"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                 <option selected value={undefined}>Select condition</option>
                 {conditions?.map((condition) => (
@@ -82,9 +83,10 @@ function FilterNode(props: NodeProps) {
         </>
         }
         {selectedColumn && selectedCondition && <div>
-            <input type={columnDataType[selectedColumn] === "number" ? "number" : "text"}
+            <input type={columnDataType && columnDataType[selectedColumn] === "number" ? "number" : "text"}
+                value={input}
                 onChange={(e) => setInput(e.target.value)}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 " required />
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 " />
         </div>
         }
         {selectedColumn && selectedCondition && input &&
