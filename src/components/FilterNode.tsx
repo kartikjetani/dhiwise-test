@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Handle, NodeProps, Position, getIncomers, useEdges, useNodes, useOnSelectionChange } from 'reactflow'
-import { getNodeById, processData, setColumnDataTypes, setSelectedColumn, setSelectedCondition, updateNodeData } from '../store/reducers/workflowReducer';
+import { Handle, NodeProps, Position, getIncomers, useEdges, useNodes } from 'reactflow';
+import { getNodeById, processData, setColumnDataTypes, updateNodeData } from '../store/reducers/workflowReducer';
 import { getColumnDataType, getConditionsFromDataType } from '../utils/filterUtils';
 
 function FilterNode(props: NodeProps) {
 
-    const { id, data, xPos, yPos } = props
+    const { id, data, xPos, yPos, selected } = props
     const nodes = useNodes()
     const edges = useEdges()
     const incomers = getIncomers(
@@ -55,7 +55,7 @@ function FilterNode(props: NodeProps) {
         dispatch(processData(id))
     }
 
-    return (<div className=' p-3 border border-black rounded-lg'>
+    return (<div className={` p-3 border  ${selected ? 'border-blue-700' : ' border-black'} rounded-lg`}>
         <p>Filter</p>
         <label htmlFor="column-name" className="block mb-2 text-sm font-medium text-gray-900 ">Column name:</label>
         <select

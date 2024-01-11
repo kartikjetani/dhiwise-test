@@ -1,13 +1,12 @@
-import React, { useCallback, useState } from 'react';
-import ReactFlow, { Background, Controls, Node, applyEdgeChanges, applyNodeChanges, useOnSelectionChange } from 'reactflow';
-import CSVSelectorNode from './CSVSelectorNode';
-import FilterNode from './FilterNode';
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import ReactFlow, { Background, Controls } from 'reactflow';
 import { addReduxEdge, setEdges, setNodes } from '../store/reducers/workflowReducer';
-import CsvToTable from './CSVToTable';
+import CSVSelectorNode from './CSVSelectorNode';
 import Consumer from './Consumer';
+import FilterNode from './FilterNode';
 
-const nodeTypes = {
+export const nodeTypes = {
     CSVSelectorNode,
     FilterNode
 };
@@ -28,39 +27,33 @@ const WorkflowCanvas = () => {
         [setEdges]
     );
     const onConnect = useCallback(
-        (connection) => dispatch(addReduxEdge(connection)),
-        [setEdges]
+        (connection) => {
+            // Check if the target node already has an edge connected to it
+            const targetHasEdge = edges.some(edge => edge.target === connection.target);
+
+            // If the target node doesn't have an edge, create the new edge
+            if (!targetHasEdge) {
+                dispatch(addReduxEdge(connection));
+            }
+        },
+        [edges]
     );
 
+    // const onNodesChange = useCallback(
+    //     (changes) => {
+    //         dispatch( applyNodeChanges(changes, nodes))
+    //     },
+    //     [],
+    // );
+    // const onEdgesChange = useCallback(
+    //     (changes) => setEdges((eds) => applyEdgeChanges(changes, edges)),
+    //     [],
+    // );
 
-    // const handleAdd = () => {
-    //     // Add your logic to create a new workflow element
-    //     const newElement = {
-    //         id: 'someUniqueId',
-    //         type: 'default',
-    //         position: { x: 0, y: 0 },
-    //         data: { label: 'New Node' },
-    //     };
-    //     onAddWorkflow(newElement);
-    // };
-
-    // const handleUpdate = () => {
-    //     // Add your logic to update a workflow element
-    //     const updatedElement = {
-    //         id: 'someUniqueId',
-    //         type: 'default',
-    //         position: { x: 100, y: 100 },
-    //         data: { label: 'Updated Node' },
-    //     };
-    //     onUpdateWorkflow(updatedElement);
-    // };
-
-    // const handleDelete = () => {
-    //     // Add your logic to delete a workflow element
-    //     onDeleteWorkflow('someUniqueId');
-    // };
-
-
+    // const onConnect = useCallback(
+    //     (params) => setEdges((eds) => addEdge(params, eds)),
+    //     [],
+    // );
 
     return (
         <div style={{ height: 500, width: "100vw" }}>
@@ -73,6 +66,7 @@ const WorkflowCanvas = () => {
                 nodeTypes={nodeTypes}
                 style={{ backgroundColor: "#B8CEFF" }}
                 fitView
+                defaultEdgeOptions={{ animated: true }}
             >
                 <Background />
                 <Controls />

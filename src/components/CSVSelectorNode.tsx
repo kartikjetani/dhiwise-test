@@ -1,14 +1,13 @@
-import { Handle, NodeProps, Position } from 'reactflow'
-import { csvConfig } from '../configs/csvConfig'
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import Papa from 'papaparse';
+import { useDispatch, useSelector } from 'react-redux';
+import { Handle, NodeProps, Position } from 'reactflow';
+import { csvConfig } from '../configs/csvConfig';
 import { setOutputData, setTableData, updateNodeData } from '../store/reducers/workflowReducer';
 
 
 function CSVSelectorNode(props: NodeProps) {
 
-    const { id, data } = props
+    const { id, data, selected } = props
     const dispatch = useDispatch();
     const tableData = useSelector((state) => state?.workflow?.tableData);
 
@@ -46,7 +45,7 @@ function CSVSelectorNode(props: NodeProps) {
     }
 
     return (
-        <div className=' p-3 border border-black rounded-lg'>
+        <div className={` p-3 border ${selected ? 'border-blue-700' : ' border-black'} rounded-lg`}>
             <p>{data.label}</p>
             <label htmlFor={id} className="block mb-2 text-sm font-medium text-gray-900 ">Example data</label>
             <select id={id}

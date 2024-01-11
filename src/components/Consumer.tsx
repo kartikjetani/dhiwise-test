@@ -1,13 +1,13 @@
-import React, { useEffect } from 'react'
-import { useNodes, useNodesState, useOnSelectionChange } from 'reactflow';
-import { setOutputData } from '../store/reducers/workflowReducer';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNodesState, useOnSelectionChange } from 'reactflow';
+import { setOutputData } from '../store/reducers/workflowReducer';
 
 function Consumer() {
     const dispatch = useDispatch();
 
     const reduxNodes = useSelector((state) => state?.workflow?.nodes);
-    const [nodes, setNodes, onNodesChange] = useNodesState([]);
+    const [, setNodes,] = useNodesState([]);
 
     useEffect(() => {
         setNodes(reduxNodes)
